@@ -39,4 +39,4 @@ The program is set up to set pins 3, 5, 6, and 9 as pwm pins.  If you are using 
 
 
 
-Plug the Arduino into the server's USB port, connect the fans, and all should be working. 
+Plug the Arduino into the server's USB port, connect the fans, and reboot the server.
