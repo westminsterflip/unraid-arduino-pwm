@@ -1,0 +1,2 @@
+# fan control - every 5 min
+*/5 * * * * /boot/config/scripts/hdd_temp_send.sh 2>&1 | /usr/bin/logger -t fan_control

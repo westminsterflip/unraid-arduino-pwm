@@ -1,0 +1,1 @@
+ATTRS{idVendor}=="2341", ATTRS{idProduct}=="0043", RUN+="/boot/config/scripts/screen_start.sh"
