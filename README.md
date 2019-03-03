@@ -6,13 +6,16 @@ This may work for non-unRAID systems or may not work on your unRAID installation
 
 ## Installation
 ### unRAID
+**Note:** if your Arduino connects as something other than `/dev/ttyACM0` you will need to change that in `hdd_temp_send.sh` and `screen_start.sh`
 1. `usbreset.c` will not compile on unRAID.  Compile on an x64 Linux system.  (I used WSL, I assume others will work): `gcc usbreset.c -o usbreset`  
    (There is a usbreset binary in the repo, these are just instructions in case you don't trust the pre-compiled binary)
 2. Edit `hdd_temp_send.sh` to reflect the number and dev name of your drives
-3. If you want to check the drive temperature at an interval different than 5 minutes, edit `mycrontab.txt` accordingly
-4. If you don't have one already. create scripts a folder in /boot/config/:    `mkdir /boot/config/scripts`
-5. Copy `arduino.rules`, `hdd_temp_send.sh`, `mycrontab.txt`, `reset_arduino.sh`, `screen_start.sh`, and `usbreset` to `/boot/config/scripts`
-6. Add the following to the end of `/boot/config/go`:
+3. Edit `arduino.rules` and `reset_arduino.sh` to match the `lsusb` output for your Arduino.  
+   (`lsusb` should return `xxxx:xxxx`.  idVendor is the first 4, idProduct is the second 4.  The format `xxxx:xxxx` is used in `reset_arduino.sh` twice.)
+4. If you want to check the drive temperature at an interval different than 5 minutes, edit `mycrontab.txt` accordingly
+5. If you don't have one already. create scripts a folder in /boot/config/:    `mkdir /boot/config/scripts`
+6. Copy `arduino.rules`, `hdd_temp_send.sh`, `mycrontab.txt`, `reset_arduino.sh`, `screen_start.sh`, and `usbreset` to `/boot/config/scripts`
+7. Add the following to the end of `/boot/config/go`:
 ```
 # Open serial connection
 /boot/config/scripts/screen_start.sh
