@@ -8,24 +8,24 @@ int fan_off_pwm = 0;
 int fan_low_pwm = 100;
 int fan_start_pwm = 255;
 int fan_high_pwm = 255;
-int num_steps = fan_high_temp - fan_off_temp - 1;
-int pwm_increment = (fan_high_pwm - fan_low_pwm) / num_steps;
+int num_steps = fan_high_temp - fan_off_temp - 1; //19
+int pwm_increment = (fan_high_pwm - fan_low_pwm) / num_steps; //8
 int previous_speed = 0;
 String inString = "";    // string to hold input
 
 void setup() {
-  pinMode(fan_pin1, OUTPUT);
+  pinMode(fan_pin1, OUTPUT);  //The noctuas don't seem to start until 45 deg which is about 172 pwm
   pinMode(fan_pin2, OUTPUT);
   pinMode(fan_pin3, OUTPUT);
   pinMode(fan_pin4, OUTPUT);
   // Open serial communications and wait for port to open:
   Serial.begin(9600);
   while (!Serial) {
-    delay 1; // wait for serial port to connect. Needed for native USB port only
+    delay (1); // wait for serial port to connect. Needed for native USB port only
   }
 
   // send an intro:
-  Serial.println("\n\nString toInt():");
+  Serial.println("Starting");
   Serial.println();
 }
 
