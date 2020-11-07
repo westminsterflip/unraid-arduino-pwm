@@ -9,7 +9,7 @@ This may work for non-unRAID systems or may not work on your unRAID installation
 **Note:** if your Arduino connects as something other than `/dev/ttyACM0` you will need to change that in `hdd_temp_send.sh` and `screen_start.sh`
 1. `usbreset.c` will not compile on unRAID.  Compile on an x64 Linux system.  (I used WSL, I assume others will work): `gcc usbreset.c -o usbreset`  
    (There is a usbreset binary in the repo, these are just instructions in case you don't trust the pre-compiled binary)
-2. Edit `hdd_temp_send.sh` to reflect the number and dev name of your drives
+2. Edit `hdd_temp_send.sh` to reflect the number and dev name of your drives (There is a comment in the file about HIGHEST_TEMP; set it to 0 for normal operation.  It is set to 40 in case a drive is no longer recognized by the system)
 3. Edit `arduino.rules` and `reset_arduino.sh` to match the `lsusb` output for your Arduino.  
    (`lsusb` should return `xxxx:xxxx`.  idVendor is the first 4, idProduct is the second 4.  The format `xxxx:xxxx` is used in `reset_arduino.sh` twice.)
 4. If you want to check the drive temperature at an interval different than 5 minutes, edit `mycrontab.txt` accordingly
@@ -18,7 +18,7 @@ This may work for non-unRAID systems or may not work on your unRAID installation
 7. Add the following to the end of `/boot/config/go`:
 ```
 # Open serial connection
-/boot/config/scripts/screen_start.sh
+bash /boot/config/scripts/screen_start.sh
 
 # Add udev rule
 cp /boot/config/scripts/arduino.rules /etc/udev/rules.d

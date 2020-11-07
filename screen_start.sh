@@ -4,5 +4,5 @@ while [ ! -e /dev/ttyACM0 ]; do
 done
 screen -m -d /dev/ttyACM0 9600 &
 sleep 5
-/boot/config/scripts/hdd_temp_send.sh
+bash /boot/config/scripts/hdd_temp_send.sh
 pkill -f -i screen

@@ -15,40 +15,43 @@
 
 ### VARIABLES FOR USER TO SET ###
 # Amount of drives in the array. Make sure it matches the amount you filled out below.
-NUM_OF_DRIVES=4
+NUM_OF_DRIVES=11
 
 # unRAID drives that are in the array/backplane of the fan we need to control
-HD[1]=/dev/sdb
-HD[2]=/dev/sdc
-HD[3]=/dev/sdd
-HD[4]=/dev/sde
-#HD[5]=/dev/sdf
-#HD[6]=/dev/sdg
-#HD[7]=/dev/sdh
-#HD[8]=/dev/sdi
-#HD[9]=/dev/sdj
-#HD[10]=/dev/sdk
-#HD[11]=/dev/sdl
+HD[1]=/dev/nvme0n1
+HD[2]=/dev/sdb
+HD[3]=/dev/sdc
+HD[4]=/dev/sdd
+HD[5]=/dev/sde
+HD[6]=/dev/sdf
+HD[7]=/dev/sdg
+HD[8]=/dev/sdh
+HD[9]=/dev/sdi
+HD[10]=/dev/sdj
+HD[11]=/dev/sdk
 #HD[12]=/dev/sdm
-#HD[13]=/dev/sdn
-#HD[14]=/dev/sdo
-#HD[15]=/dev/sdp
-#HD[16]=/dev/sdq
-#HD[17]=/dev/sdr
-#HD[18]=/dev/sds
-#HD[19]=/dev/sdt
-#HD[20]=/dev/sdu
-#HD[21]=/dev/sdv
-#HD[22]=/dev/sdw
-#HD[23]=/dev/sdx
-#HD[24]=/dev/sdy
+#HD[13]=/dev/sdo
+#HD[14]=/dev/sdp
+#HD[15]=/dev/sdq
+#HD[16]=/dev/sdr
+#HD[17]=/dev/sds
+#HD[18]=/dev/sdt
+#HD[19]=/dev/sdu
+#HD[20]=/dev/sdv
+#HD[21]=/dev/sdw
+#HD[22]=/dev/sdx
+#HD[23]=/dev/sdy
+#HD[24]=/dev/sdz
 
 ### END USER SET VARIABLES ###
 
 # Program variables - do not modify
-HIGHEST_TEMP=0
+# HIGHEST_TEMP was set to 40 to protect an NVMe drive on my system
+# Set to 0 for normal operation or set a higher temperature if you experience intermittent overheating.
+HIGHEST_TEMP=40
 CURRENT_DRIVE=1
 CURRENT_TEMP=0
+OUTPUT=""
 
 # while loop to get the highest temperature of active drives. 
 # If all are spun down then high temp will be set to 0.
@@ -58,14 +61,33 @@ do
   if [ "$CURRENT_TEMP" == "" ]; then
     CURRENT_TEMP=`smartctl -a ${HD[$CURRENT_DRIVE]} | grep -m 1 -i Current\ Drive\ Temperature | awk '{print $4}'`
   fi
+  if [ "$CURRENT_TEMP" == "" ]; then
+    CURRENT_TEMP=`smartctl -x ${HD[$CURRENT_DRIVE]} | grep '^Current Temperature' | awk '{print $3}'`
+  fi
+  if [ "$CURRENT_TEMP" == "" ]; then
+    CURRENT_TEMP=`smartctl -x ${HD[$CURRENT_DRIVE]} | grep Temperature | awk '{print $2}'`
+  fi
   if [ "$HIGHEST_TEMP" -le "$CURRENT_TEMP" ]; then
     HIGHEST_TEMP=$CURRENT_TEMP
   fi
   let "CURRENT_DRIVE+=1"
 done
-echo "Highest HDD temp is: "$HIGHEST_TEMP
+OUTPUT="Highest HDD temp is: "$HIGHEST_TEMP
+CPU_TEMP=`/usr/bin/sensors | grep CPU\ Temp | awk -F '+' '{print $2}' | awk -F '.' '{print $1}'`
+CPU_TEMPA=$((CPU_TEMP/2+15))
+CPU_TEMP1=`/usr/bin/sensors | grep Package\ id\ 1 | awk -F '+' '{print $2}' | awk -F '.' '{print $1}'`
+CPU_TEMPA1=$((CPU_TEMP/2+15))
+if [ "$CPU_TEMPA" -gt "$HIGHEST_TEMP" ]; then
+  HIGHEST_TEMP=$CPU_TEMPA
+  OUTPUT="CPU temp highest: "$CPU_TEMP
+fi
+if [ "$CPU_TEMPA1" -gt "$HIGHEST_TEMP" ]; then
+  HIGHEST_TEMP=$CPU_TEMPA1
+  OUTPUT="CPU temp highest: "$CPU_TEMP1
+fi
+echo $OUTPUT
 while [ ! -e /dev/ttyACM0 ]; do
   sleep 1
 done
+HIGHEST_TEMP=$((HIGHEST_TEMP+5))
 echo $HIGHEST_TEMP > /dev/ttyACM0
-
