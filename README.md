@@ -18,7 +18,7 @@ This may work for non-unRAID systems or may not work on your unRAID installation
 7. Add the following to the end of `/boot/config/go`:
 ```
 # Open serial connection
-bash /boot/config/scripts/screen_start.sh
+bash /boot/config/scripts/screen_start.sh &
 
 # Add udev rule
 cp /boot/config/scripts/arduino.rules /etc/udev/rules.d
